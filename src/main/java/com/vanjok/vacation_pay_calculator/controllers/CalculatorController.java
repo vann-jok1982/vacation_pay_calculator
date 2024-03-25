@@ -2,30 +2,21 @@ package com.vanjok.vacation_pay_calculator.controllers;
 
 import com.vanjok.vacation_pay_calculator.models.HolidayRequest;
 import com.vanjok.vacation_pay_calculator.models.HolidayResponse;
+import com.vanjok.vacation_pay_calculator.servis.CalculatorServis;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/calkulator")
+@RequestMapping("/calсulator")
 public class CalculatorController {
-//    @Autowired
-//    HolidayRequest holidayRequest;
 
     @Autowired
-    HolidayResponse holidayResponse;
+    CalculatorServis calculatorServis;
 
-    @GetMapping("/{averageSalary}/{vacationDays}")
-    public HolidayResponse CalkulatorZp(@PathVariable("averageSalary") double averageSalary ,
-                                       @PathVariable("vacationDays") int vacationDays ){
+    @GetMapping
+    public ResponseEntity<HolidayResponse> PostResponse(@RequestBody HolidayRequest holidayRequest) {
 
-//        holidayRequest.setAverageSalary(averageSalary);
-//        holidayRequest.setVacationDays(vacationDays);
-
-        double vacationPackages=averageSalary/29*vacationDays;
-        holidayResponse.setVacationPackages(vacationPackages);
-        return holidayResponse;
+        return ResponseEntity.ok(calculatorServis.calculation(holidayRequest));
     }
 }
