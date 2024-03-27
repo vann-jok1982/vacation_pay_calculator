@@ -1,8 +1,5 @@
 package com.vanjok.vacation_pay_calculator.models;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class HolidayRequest {
     int vacationDays;//кол-во дней отпуска
     int averageSalary;//средняя зарплата
