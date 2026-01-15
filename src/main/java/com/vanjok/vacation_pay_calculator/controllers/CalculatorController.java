@@ -16,7 +16,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/calсulator")
+@RequestMapping("/calculate")
 public class CalculatorController {
 
 
@@ -24,22 +24,46 @@ public class CalculatorController {
     CalculatorService calculatorService;
 
     @GetMapping
-    public ResponseEntity<HolidayResponse> getVacationPay(
+    public ResponseEntity<?> getVacationPay(
             @RequestParam(value = "averageSalary") int averageSalary,
             @RequestParam(value = "vacationDays") int vacationDays,
             @RequestParam(value = "vacationStartDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate vacationStartDate
     ) {
 
-        //Создаем request object
-        HolidayRequest holidayRequest;
-        if (vacationStartDate != null) {
-            holidayRequest = new HolidayRequest(vacationDays,averageSalary, vacationStartDate);
-        } else {
-            holidayRequest = new HolidayRequest(vacationDays,averageSalary);
+        // Валидация вручную
+        if (averageSalary <= 0) {
+            return ResponseEntity.badRequest().body(
+                    new CalculatorErrorResponse("Средняя зарплата должна быть положительной")
+            );
         }
 
-        return ResponseEntity.ok(calculatorService.calculation(holidayRequest));
+        if (vacationDays <= 0) {
+            return ResponseEntity.badRequest().body(
+                    new CalculatorErrorResponse("Количество дней отпуска должно быть положительным")
+            );
+        }
 
+        if (vacationDays > 365) {
+            return ResponseEntity.badRequest().body(
+                    new CalculatorErrorResponse("Количество дней отпуска не может превышать 365")
+            );
+        }
+
+        if (vacationStartDate != null && vacationStartDate.isBefore(LocalDate.now())) {
+            return ResponseEntity.badRequest().body(
+                    new CalculatorErrorResponse("Дата начала отпуска не может быть в прошлом")
+            );
+        }
+
+        HolidayRequest holidayRequest;
+        if (vacationStartDate != null) {
+            holidayRequest = new HolidayRequest(vacationDays, averageSalary, vacationStartDate);
+        } else {
+            holidayRequest = new HolidayRequest(vacationDays, averageSalary);
+        }
+
+        HolidayResponse response = calculatorService.calculation(holidayRequest);
+        return ResponseEntity.ok(response);
     }
 
     /*
