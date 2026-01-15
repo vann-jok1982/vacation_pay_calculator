@@ -51,7 +51,7 @@ public class CalculatorController {
 
         if (vacationStartDate != null && vacationStartDate.isBefore(LocalDate.now())) {
             return ResponseEntity.badRequest().body(
-                    new CalculatorErrorResponse("Дата начала отпуска не может быть в прошлом")
+                    new CalculatorErrorResponse("Дата начала отпуска не может быть в прошлом ")
             );
         }
 
